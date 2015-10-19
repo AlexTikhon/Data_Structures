@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>DLL</title>
+</head>
+<body>
+    <script>
+        function DoublyLinkedList() {
+            this.head = null;
+            this.tail = null;
+        }
+        DoublyLinkedList.prototype = {
+            append: function (value) {
+                if (!this.head) {
+                    this.head = { Data: value, Next: null, Previous: null };
+                    this.tail = this.head;
+                } else {
+                    var current = this.tail;
+                    current.Next = { Data: value, Next: null, Previous: current };
+                    this.tail = current.Next;
+                }
+                return this;
+            },
+            at: function (n) {
+                if (!this.head) return;
+                if (n < 0) return;
+                var current = this.head,
+                    i = 0,
+                    nNode = null;
+                while (current) {
+                    if (i == n) {
+                        nNode = current;
+                        return nNode;
+                    }
+                    i++;
+                    current = current.Next;
+                }
+            },
+            deleteAt: function (n) {
+                var nNode = this.at(n);
+                if (nNode == undefined) return;
+                if (!nNode.Previous){
+                    if(this.head == this.tail){
+                        this.head = null;
+                        this.tail = null;
+                    } else {
+                        this.head = this.head.Next;
+                        this.head.Previous = null;
+                    }
+                } else if (!nNode.Next){
+                    this.tail = this.tail.Previous;
+                    this.tail.Next = null;
+                } else {
+                    var node = nNode,
+                        nodePrev = nNode.Previous,
+                        nodeNext = nNode.Next;
+                    nodePrev.Next = nNode.Next;
+                    nodeNext.Previous = nNode.Previous;
+                    nNode = null;
+                }
+                return this;
+            },
+            insertAt: function (value, n) {
+                var nNode = this.at(n);
+                if (nNode == undefined) return;
+                if (!nNode.Previous) {
+                    if (this.head == this.tail) {
+                        var current = this.head;
+                        this.head = { Data: value, Next: current, Previous: null };
+                        current.Previous = this.head;
+                        this.tail = current;
+                    } else {
+                        var current = this.head;
+                        this.head = { Data: value, Next: current, Previous: null };
+                        current.Previous = this.head;
+                    }
+                } else if (!nNode.Next) {
+                    var current = nNode;
+                    this.tail = { Data: value, Next: null, Previous: current };
+                    current.Next = this.tail;
+                } else {
+                    var current = nNode,
+                        currentPrev = nNode.Previous;
+                    nNode = { Data: value, Next: current, Previous: currentPrev };
+                    current.Previous = nNode;
+                    currentPrev.Next = nNode;
+                }
+                return this;
+            },
+            reverse: function () {
+                var head = this.head;
+                var tail = this.tail;
+                var current = this.head;
+                var tmp = null;
+                while (current) {
+                    tmp = current.Next;
+                    current.Next = current.Previous;
+                    current.Previous = tmp;
+                    if (!tmp) {
+                        this.head = tail;
+                        this.tail = head;
+                    }
+                    current = tmp;
+                }
+                return this;
+            },
+            each: function (func) {
+                if (!this.head) return;
+                var current = this.head;
+                while (current) {
+                    current.Data = func(current.Data);
+                    current = current.Next;
+                }
+            },
+            indexOF: function (value) {
+                if (!this.head) return;
+                var current = this.head,
+                    i = 0;
+                while (current) {
+                    if (current.Data == value) return 'index:' + i;
+                    current = current.Next;
+                    i++;
+                }
+            }
+        }
+
+        var list = new DoublyLinkedList();
+        list.append(7).append(6).append(5).append(4).append(3).append(2).append(1).reverse().deleteAt(0);
+        console.log(list.at(0));
+        list.insertAt(0, 0);
+        console.log(list.indexOF(4));
+        list.each(function (a) { return a += 10; });
+    </script>
+</body>
+</html>
